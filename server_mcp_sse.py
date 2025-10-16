@@ -394,59 +394,39 @@ class WeatherMCPServer:
     def get_sse_app(self):
         """Get SSE-enabled ASGI app"""
         from starlette.applications import Starlette
-        from starlette.routing import Route
-        from starlette.responses import Response
-        from sse_starlette import EventSourceResponse
+        from starlette.routing import Route, Mount
+        from starlette.responses import Response, JSONResponse
 
+        # Create SSE transport
         transport = SseServerTransport("/messages")
 
         async def handle_sse(request):
             """Handle SSE connection"""
-            async def event_generator():
-                async with transport.connect_sse(
-                    request.scope,
-                    request.receive,
-                    request._send
-                ) as streams:
-                    initialization_options = self.server.create_initialization_options()
-                    await self.server.run(
-                        streams[0],
-                        streams[1],
-                        initialization_options
-                    )
-
-            return EventSourceResponse(event_generator())
-
-        async def handle_messages(request):
-            """Handle message endpoint"""
-            async with transport.connect_post(
+            async with transport.connect_sse(
                 request.scope,
                 request.receive,
                 request._send
             ) as streams:
-                initialization_options = self.server.create_initialization_options()
                 await self.server.run(
                     streams[0],
                     streams[1],
-                    initialization_options
+                    self.server.create_initialization_options()
                 )
             return Response()
 
         async def health(request):
             """Health check"""
-            return Response(
-                content=json.dumps({
-                    "status": "healthy",
-                    "api_key_configured": bool(self.api_key)
-                }),
-                media_type="application/json"
-            )
+            return JSONResponse({
+                "status": "healthy",
+                "api_key_configured": bool(self.api_key),
+                "protocol": "MCP SSE/Streamable HTTP"
+            })
 
         app = Starlette(
             routes=[
-                Route("/sse", handle_sse),
-                Route("/messages", handle_messages, methods=["POST"]),
-                Route("/health", health),
+                Route("/sse", endpoint=handle_sse),
+                Mount("/messages", app=transport.handle_post_message),
+                Route("/health", endpoint=health),
             ]
         )
 
