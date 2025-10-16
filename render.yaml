@@ -5,6 +5,7 @@ services:
     plan: free
     buildCommand: pip install uv && uv sync
     startCommand: uv run gunicorn my_server:app -c gunicorn.conf.py
+    healthCheckPath: /mcp/health
     envVars:
       - key: OPENWEATHER_API_KEY
         sync: false
