@@ -2,10 +2,14 @@ services:
   - type: web
     name: weather-mcp-server
     env: python
-    buildCommand: .venv/bin/pip install -r requirements-http.txt
-    startCommand: python server_mcp_sse.py
+    buildCommand: |
+      pip install uv
+      uv sync
+    startCommand: uv run gunicorn my_server:app -c gunicorn.conf.py
     envVars:
       - key: OPENWEATHER_API_KEY
-        value: f3d6a55b5c91fc1c77cebec3ec5f46a1
+        sync: false
       - key: PORT
         value: 8000
+      - key: WORKERS
+        value: 2
