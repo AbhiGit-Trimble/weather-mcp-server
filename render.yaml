@@ -3,7 +3,7 @@ services:
     name: weather-mcp-server
     env: python
     buildCommand: .venv/bin/pip install -r requirements-http.txt
-    startCommand: uvicorn server_http:app --host 0.0.0.0 --port $PORT
+    startCommand: python server_mcp_sse.py
     envVars:
       - key: OPENWEATHER_API_KEY
         value: f3d6a55b5c91fc1c77cebec3ec5f46a1
