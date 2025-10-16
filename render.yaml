@@ -9,7 +9,5 @@ services:
     envVars:
       - key: OPENWEATHER_API_KEY
         sync: false
-      - key: PORT
-        value: 8000
       - key: WORKERS
         value: 2
