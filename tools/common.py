@@ -11,7 +11,10 @@ import httpx
 # Constants
 BASE_URL = "https://api.openweathermap.org/data/2.5"
 GEO_URL = "http://api.openweathermap.org/geo/1.0"
-API_KEY = os.getenv("OPENWEATHER_API_KEY", "")
+
+def get_api_key():
+    """Get API key from environment (loads fresh each time)."""
+    return os.getenv("OPENWEATHER_API_KEY", "")
 
 # Cache
 _cache: Dict[str, Dict[str, Any]] = {}
@@ -53,7 +56,9 @@ async def make_weather_request(endpoint: str, params: Dict[str, Any]) -> Dict[st
     Returns:
         Dictionary with success status and data or error information
     """
-    if not API_KEY:
+    api_key = get_api_key()
+
+    if not api_key:
         return {
             "success": False,
             "error": "API key not configured. Please set OPENWEATHER_API_KEY environment variable."
@@ -67,7 +72,7 @@ async def make_weather_request(endpoint: str, params: Dict[str, Any]) -> Dict[st
         return {"success": True, "data": cached}
 
     # Make request
-    params["appid"] = API_KEY
+    params["appid"] = api_key
 
     try:
         async with httpx.AsyncClient() as client:
