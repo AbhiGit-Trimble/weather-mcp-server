@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "weather": {
+      "command": "python",
+      "args": ["/full/path/to/weather-mcp-server/server.py"],
+      "env": {
+        "OPENWEATHER_API_KEY": "your_openweather_api_key_here"
+      }
+    }
+  }
+}
+

@@ -1,0 +1,180 @@
+{
+  "examples": [
+    {
+      "name": "Get Current Weather",
+      "description": "Get current weather conditions for a city",
+      "tool": "get_current_weather",
+      "input": {
+        "location": "Paris,FR",
+        "units": "metric"
+      },
+      "expected_output": {
+        "location": {
+          "name": "Paris",
+          "country": "FR",
+          "coordinates": {
+            "latitude": 48.8566,
+            "longitude": 2.3522
+          }
+        },
+        "current": {
+          "temperature": 15.5,
+          "feels_like": 14.8,
+          "humidity": 72,
+          "description": "partly cloudy",
+          "wind": {
+            "speed": 5.2,
+            "direction": 230
+          }
+        }
+      }
+    },
+    {
+      "name": "Get 5-Day Forecast",
+      "description": "Get weather forecast with 3-hour intervals",
+      "tool": "get_forecast",
+      "input": {
+        "location": "Tokyo,JP",
+        "units": "metric",
+        "days": 3
+      },
+      "expected_output": {
+        "location": {
+          "name": "Tokyo",
+          "country": "JP"
+        },
+        "forecast": [
+          {
+            "datetime": "2024-10-16T12:00:00",
+            "temperature": 18.5,
+            "description": "clear sky",
+            "pop": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search for Location",
+      "description": "Find a city and get its coordinates",
+      "tool": "search_location",
+      "input": {
+        "query": "Springfield",
+        "limit": 5
+      },
+      "expected_output": {
+        "query": "Springfield",
+        "results": [
+          {
+            "name": "Springfield",
+            "country": "US",
+            "state": "Illinois",
+            "coordinates": {
+              "latitude": 39.7817,
+              "longitude": -89.6501
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Get Weather by Coordinates",
+      "description": "Get weather for specific lat/lon",
+      "tool": "get_weather_by_coordinates",
+      "input": {
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "units": "metric"
+      },
+      "expected_output": {
+        "location": {
+          "name": "London",
+          "country": "GB"
+        },
+        "current": {
+          "temperature": 14.2,
+          "description": "light rain"
+        }
+      }
+    },
+    {
+      "name": "Get Air Quality",
+      "description": "Get air quality index and pollutants",
+      "tool": "get_air_quality",
+      "input": {
+        "latitude": 39.9042,
+        "longitude": 116.4074
+      },
+      "expected_output": {
+        "air_quality_index": 3,
+        "aqi_level": "Moderate",
+        "components": {
+          "pm2_5": 25.5,
+          "pm10": 45.2,
+          "no2": 15.3,
+          "o3": 68.5
+        }
+      }
+    },
+    {
+      "name": "Compare Weather",
+      "description": "Compare weather across multiple cities",
+      "tool": "compare_weather",
+      "input": {
+        "locations": [
+          "New York,NY,US",
+          "London,UK",
+          "Tokyo,JP"
+        ],
+        "units": "metric"
+      },
+      "expected_output": {
+        "locations": [
+          {
+            "location": {"name": "New York"},
+            "current": {"temperature": 18.0}
+          },
+          {
+            "location": {"name": "London"},
+            "current": {"temperature": 14.0}
+          },
+          {
+            "location": {"name": "Tokyo"},
+            "current": {"temperature": 22.0}
+          }
+        ]
+      }
+    }
+  ],
+  "natural_language_examples": [
+    {
+      "user_query": "What's the weather in Paris?",
+      "ai_will_use": "get_current_weather",
+      "parameters": {
+        "location": "Paris,FR",
+        "units": "metric"
+      }
+    },
+    {
+      "user_query": "Will it rain in Seattle this week?",
+      "ai_will_use": "get_forecast",
+      "parameters": {
+        "location": "Seattle,WA,US",
+        "units": "imperial"
+      }
+    },
+    {
+      "user_query": "Compare weather in Sydney and Melbourne",
+      "ai_will_use": "compare_weather",
+      "parameters": {
+        "locations": ["Sydney,AU", "Melbourne,AU"],
+        "units": "metric"
+      }
+    },
+    {
+      "user_query": "What's the air quality in Beijing?",
+      "ai_will_use": ["search_location", "get_air_quality"],
+      "note": "AI will first search for Beijing coordinates, then get air quality"
+    }
+  ]
+}
+

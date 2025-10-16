@@ -1,0 +1,127 @@
+{
+  "example": "Complete Trimble Agent Configuration with Weather MCP",
+  "description": "Ready-to-use configuration for creating a Trimble AI agent with weather capabilities",
+  
+  "agent_configuration": {
+    "name": "Construction Weather Assistant",
+    "description": "AI assistant for construction site weather monitoring and planning",
+    "model": "gpt-4",
+    "temperature": 0.7,
+    "max_tokens": 2000,
+    
+    "instructions": "You are a construction weather assistant with access to real-time weather data. Your responsibilities:\n\n1. Monitor weather conditions for construction sites\n2. Provide accurate forecasts for project planning\n3. Alert about adverse weather conditions\n4. Recommend weather-based schedule adjustments\n5. Consider safety implications of weather\n\nWhen answering:\n- Always specify location and time\n- Use appropriate units (metric/imperial) for the region\n- Highlight safety concerns (extreme temps, high winds, heavy rain)\n- Provide actionable recommendations\n- Mention probability for forecasts",
+    
+    "mcp_servers": {
+      "weather": {
+        "command": "python",
+        "args": ["/Users/abhalek/Documents/Agentic Platform/MCPs/weather-mcp-server/server.py"],
+        "env": {
+          "OPENWEATHER_API_KEY": "f3d6a55b5c91fc1c77cebec3ec5f46a1",
+          "CACHE_TTL": "600",
+          "LOG_LEVEL": "INFO"
+        },
+        "enabled_tools": [
+          "get_current_weather",
+          "get_forecast",
+          "search_location",
+          "get_weather_by_coordinates",
+          "get_air_quality",
+          "compare_weather"
+        ]
+      }
+    },
+    
+    "capabilities": {
+      "weather_monitoring": true,
+      "location_search": true,
+      "air_quality_check": true,
+      "multi_site_comparison": true
+    }
+  },
+  
+  "api_request": {
+    "method": "POST",
+    "url": "https://agents.trimble-ai.com/v1/agents",
+    "headers": {
+      "Authorization": "Bearer YOUR_TRIMBLE_API_KEY",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "name": "Construction Weather Assistant",
+      "description": "AI assistant for construction site weather monitoring",
+      "model": "gpt-4",
+      "instructions": "You are a construction weather assistant...",
+      "mcp_servers": {
+        "weather": {
+          "command": "python",
+          "args": ["/Users/abhalek/Documents/Agentic Platform/MCPs/weather-mcp-server/server.py"],
+          "env": {
+            "OPENWEATHER_API_KEY": "your_key"
+          }
+        }
+      }
+    }
+  },
+  
+  "example_queries": [
+    {
+      "query": "What's the weather at our Seattle construction site?",
+      "expected_tools": ["get_current_weather"],
+      "location": "Seattle,WA,US"
+    },
+    {
+      "query": "Will rain delay our concrete pour scheduled for tomorrow in Portland?",
+      "expected_tools": ["get_forecast"],
+      "location": "Portland,OR,US",
+      "context": "Construction planning"
+    },
+    {
+      "query": "Compare weather conditions at all our West Coast project sites",
+      "expected_tools": ["compare_weather"],
+      "locations": ["Seattle,WA,US", "Portland,OR,US", "San Francisco,CA,US"]
+    },
+    {
+      "query": "Is the air quality safe for outdoor work in Los Angeles today?",
+      "expected_tools": ["search_location", "get_air_quality"],
+      "location": "Los Angeles,CA,US",
+      "safety_check": true
+    },
+    {
+      "query": "Should we delay the roofing work at coordinates 47.6062, -122.3321?",
+      "expected_tools": ["get_weather_by_coordinates", "get_forecast"],
+      "coordinates": {"lat": 47.6062, "lon": -122.3321},
+      "context": "Safety decision"
+    }
+  ],
+  
+  "curl_example": {
+    "create_agent": "curl -X POST https://agents.trimble-ai.com/v1/agents \\\n  -H 'Authorization: Bearer YOUR_TRIMBLE_API_KEY' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"name\": \"Weather Assistant\",\n    \"model\": \"gpt-4\",\n    \"mcp_servers\": {\n      \"weather\": {\n        \"command\": \"python\",\n        \"args\": [\"/full/path/to/server.py\"],\n        \"env\": {\"OPENWEATHER_API_KEY\": \"key\"}\n      }\n    }\n  }'",
+    
+    "execute_agent": "curl -X POST https://agents.trimble-ai.com/v1/agents/AGENT_ID/runs \\\n  -H 'Authorization: Bearer YOUR_TRIMBLE_API_KEY' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"input\": \"What is the weather in Paris?\"\n  }'"
+  },
+  
+  "python_example": {
+    "code": "import requests\nimport os\n\nTRIMBLE_API_KEY = os.getenv('TRIMBLE_API_KEY')\nOPENWEATHER_KEY = os.getenv('OPENWEATHER_API_KEY')\nSERVER_PATH = '/Users/abhalek/Documents/Agentic Platform/MCPs/weather-mcp-server/server.py'\n\n# Create agent\nresponse = requests.post(\n    'https://agents.trimble-ai.com/v1/agents',\n    headers={'Authorization': f'Bearer {TRIMBLE_API_KEY}'},\n    json={\n        'name': 'Weather Assistant',\n        'model': 'gpt-4',\n        'mcp_servers': {\n            'weather': {\n                'command': 'python',\n                'args': [SERVER_PATH],\n                'env': {'OPENWEATHER_API_KEY': OPENWEATHER_KEY}\n            }\n        }\n    }\n)\n\nagent = response.json()\nprint(f'Agent ID: {agent[\"id\"]}')"
+  },
+  
+  "deployment_notes": {
+    "local_development": {
+      "setup": "Use absolute path to server.py",
+      "pros": "Easy testing and debugging",
+      "cons": "Not suitable for production"
+    },
+    "cloud_deployment": {
+      "setup": "Deploy server.py to cloud, update path in config",
+      "pros": "Reliable, scalable, production-ready",
+      "cons": "Requires cloud infrastructure"
+    },
+    "considerations": [
+      "Ensure Python 3.10+ is available",
+      "Install dependencies: pip install -e .",
+      "Secure API keys using environment variables",
+      "Monitor API usage and costs",
+      "Set up logging for troubleshooting"
+    ]
+  }
+}
+

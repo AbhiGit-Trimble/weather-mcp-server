@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: weather-mcp-server
+    env: python
+    buildCommand: pip install -r requirements-http.txt
+    startCommand: python server_http.py
+    envVars:
+      - key: OPENWEATHER_API_KEY
+        value: f3d6a55b5c91fc1c77cebec3ec5f46a1
+      - key: PORT
+        value: 8000
